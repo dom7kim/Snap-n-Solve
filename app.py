@@ -125,7 +125,7 @@ def main():
     llm = OpenAI(temperature=0)
     tool_names = ["wolfram-alpha"]
     tools = load_tools(tool_names, llm=llm)
-    agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
+    agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=False)
 
     # Handle file upload and prepare the image
     uploaded_file = st.file_uploader("Choose an image...", type=["jpeg", "jpg", "png"])  

@@ -98,14 +98,14 @@ def solve_equation(equation, agent, derivative_order):
     st.latex(r'\mathrm{Solving:}\;' + equation)
     
     if derivative_order:
-        template = """Make {eq} wolfram-friendly, try finding its {order} derivative, and describe the answer in a concise manner."""
+        template = """Make {eq} wolfram-friendly, try finding its {order} derivative, and describe the answer in one sentence."""
         prompt = PromptTemplate(
         input_variables=['eq', 'order'],
         template= template
         )
         answer = agent.run(prompt.format(eq=equation, order=derivative_order))
     else:
-        template = """Make {eq} wolfram-friendly, try solving it, and describe the answer."""
+        template = """Make {eq} wolfram-friendly, try solving it, and describe the answer in one sentence."""
         prompt = PromptTemplate(
         input_variables=['eq'],
         template= template,

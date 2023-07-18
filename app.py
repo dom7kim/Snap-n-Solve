@@ -78,11 +78,10 @@ def process_response(response):
 
 # Function to convert a text with a mathematical expression to LaTeX format
 def latexify_answer(input_text):
-    system_instruction = """Just follow the instruction. 
+    system_instruction = """Just follow the instruction. No mistake.
     Put plain texts into the \\text{{}} command and then convert mathematical equations into a LaTex format. 
     If your input is 'The solution to the equation ax^2 + bx + c = 0  is given by x = (-b ± sqrt(b^2 - 4ac))/(2a)',
     your output should be '\\text{{The solution to the equation }} a x^{{2}} + b x + c = 0 \\text{{ is given by }} x = \\frac{{-b \\pm \\sqrt{{b^{{2}} - 4ac}}}}{{2a}}'.
-    No dollar sign in it. 
     """
     messages = [{"role": "system", "content": system_instruction},
                     {"role": "user", "content": input_text}]
@@ -96,24 +95,24 @@ def latexify_answer(input_text):
 # Function to solve an equation or find its derivative using Wolfram Alpha
 def solve_equation(equation, agent, derivative_order):
     st.latex(r'\mathrm{Solving:}\;' + equation)
+    with st.spinner("Wait for it..."):
+        if derivative_order:
+            template = """Make {eq} wolfram-friendly, try finding its {order} derivative, and describe the answer in one sentence."""
+            prompt = PromptTemplate(
+            input_variables=['eq', 'order'],
+            template= template
+            )
+            answer = agent.run(prompt.format(eq=equation, order=derivative_order))
+        else:
+            template = """Make {eq} wolfram-friendly, try solving it, and describe the answer in one sentence."""
+            prompt = PromptTemplate(
+            input_variables=['eq'],
+            template= template,
+            )
+            answer = agent.run(prompt.format(eq=equation))
     
-    if derivative_order:
-        template = """Make {eq} wolfram-friendly, try finding its {order} derivative, and describe the answer in one sentence."""
-        prompt = PromptTemplate(
-        input_variables=['eq', 'order'],
-        template= template
-        )
-        answer = agent.run(prompt.format(eq=equation, order=derivative_order))
-    else:
-        template = """Make {eq} wolfram-friendly, try solving it, and describe the answer in one sentence."""
-        prompt = PromptTemplate(
-        input_variables=['eq'],
-        template= template,
-        )
-        answer = agent.run(prompt.format(eq=equation))
-    
-    answer_latexified= latexify_answer("'{}'".format(answer))
-    st.latex(answer_latexified)
+        answer_latexified= latexify_answer("'{}'".format(answer))
+        st.latex(answer_latexified)
 
 # Main function to run the application
 def main():
@@ -125,7 +124,7 @@ def main():
     llm = OpenAI(temperature=0)
     tool_names = ["wolfram-alpha"]
     tools = load_tools(tool_names, llm=llm)
-    agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=False)
+    agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
 
     # Handle file upload and prepare the image
     uploaded_file = st.file_uploader("Choose an image...", type=["jpeg", "jpg", "png"])  

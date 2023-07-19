@@ -30,7 +30,7 @@ Snap 'n' Solve can handle a variety of math problems, including integrals, limit
 To use the application, follow these steps:
 
 1. Upload an image with a mathematical equation or expression, either typed or handwritten.
-2. Draw a rectangle around the equation or mathematical expression in the image.
+2. Draw a rectangle around the equation or  expression in the image, ensuring it's fully covered and no other text is captured.
 3. If you need a derivative, check the 'Looking for a derivative?' box and select the derivative order. Leave it unchecked otherwise.
 4. Click 'Select & Solve' to solve the equation or find its derivative.
 """
@@ -100,18 +100,18 @@ def solve_equation(equation, agent, derivative_order):
             template = """Make {eq} wolfram-friendly, try finding its {order} derivative, and describe the answer in one sentence."""
             prompt = PromptTemplate(
             input_variables=['eq', 'order'],
-            template= template
+            template = template
             )
             answer = agent.run(prompt.format(eq=equation, order=derivative_order))
         else:
             template = """Make {eq} wolfram-friendly, try solving it, and describe the answer in one sentence."""
             prompt = PromptTemplate(
             input_variables=['eq'],
-            template= template,
+            template = template,
             )
             answer = agent.run(prompt.format(eq=equation))
     
-        answer_latexified= latexify_answer("'{}'".format(answer))
+        answer_latexified = latexify_answer("'{}'".format(answer))
         st.latex(answer_latexified)
 
 # Main function to run the application

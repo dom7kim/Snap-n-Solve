@@ -64,11 +64,12 @@ def mathpix_request(base64_img, app_id, app_key):
         return None
     return response
 
-def check_string(input_str):
-    # Check if the string starts with '\(' and ends with '\)'
+# Function to check if the response from the Mathpix OCR API captures only the mathematical expression.
+def check_response_text(input_str):
+    # Check if the response starts with '\(' and ends with '\)'
     if not (input_str.startswith('\\(') and input_str.endswith('\\)')):
         return False
-    # Check if '\(' and '\)' appear more than once in the string
+    # Check if '\(' and '\)' appear more than once in the response
     if input_str.count('\\(') > 1 or input_str.count('\\)') > 1:
         return False
 
@@ -81,13 +82,12 @@ def process_response(response):
     elif response.json()['is_printed'] | response.json()['is_handwritten']:
         response_text = response.json()['text']
         response_latex = response_text.replace("\\(", "").replace("\\)", "")
-        if check_string(response_text):
+        if check_response_text(response_text):
             st.latex('\\text{{Solving: }}' + response_latex)
             return response_latex
         else:
             st.latex('\\text{{Please ensure to capture only the mathematical expression.}}')
-            return None
-            
+            return None        
     else:
         st.error("No equation was recognized in the image. Please ensure the image contains a clear, readable equation.")
         return None
@@ -113,7 +113,7 @@ def solve_equation(equation, agent, derivative_order):
     with st.spinner("Wait for it..."):
         if derivative_order:
             template = """Convert {eq} into a form that Wolfram Alpha can understand, try finding its {order} derivative, and describe the answer concisely.
-            If you find Wolfram Alpha wasn't able to answer it, finish the chain immediately and return 'Sorry, this problem is out of my reach.'
+            If you find its solution doesn't exist, describe what you find in one sentence.
             """
             prompt = PromptTemplate(
             input_variables=['eq', 'order'],
@@ -122,7 +122,7 @@ def solve_equation(equation, agent, derivative_order):
             answer = agent.run(prompt.format(eq=equation, order=derivative_order))
         else:
             template = """Convert {eq} into a form that Wolfram Alpha can understand, try solving it, and describe the answer in one sentence.
-            If you find Wolfram Alpha wasn't able to answer it, finish the chain immediately and return 'Sorry, this problem is out of my reach.'
+            If you find its solution doesn't exist, describe what you find in one sentence.
             """
             prompt = PromptTemplate(
             input_variables=['eq'],

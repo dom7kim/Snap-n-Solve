@@ -64,14 +64,30 @@ def mathpix_request(base64_img, app_id, app_key):
         return None
     return response
 
+def check_string(input_str):
+    # Check if the string starts with '\(' and ends with '\)'
+    if not (input_str.startswith('\\(') and input_str.endswith('\\)')):
+        return False
+    # Check if '\(' and '\)' appear more than once in the string
+    if input_str.count('\\(') > 1 or input_str.count('\\)') > 1:
+        return False
+
+    return True
+
 # Function to process the response from the Mathpix OCR API
 def process_response(response):
     if 'error' in response.json():
         st.error("An error occurred while processing the image. Please try again.")
     elif response.json()['is_printed'] | response.json()['is_handwritten']:
         response_text = response.json()['text']
-        response_latex = re.sub('\\\\(?!\\\\)', r'\\', response_text.replace("\\(", "").replace("\\)", ""))
-        return response_latex
+        response_latex = response_text.replace("\\(", "").replace("\\)", "")
+        if check_string(response_text):
+            st.latex('\\text{{Solving: }}' + response_latex)
+            return response_latex
+        else:
+            st.latex('\\text{{Please ensure to capture only the mathematical expression.}}')
+            return None
+            
     else:
         st.error("No equation was recognized in the image. Please ensure the image contains a clear, readable equation.")
         return None
@@ -94,7 +110,6 @@ def latexify_answer(input_text):
 
 # Function to solve an equation or find its derivative using Wolfram Alpha
 def solve_equation(equation, agent, derivative_order):
-    st.latex(r'\mathrm{Solving:}\;' + equation)
     with st.spinner("Wait for it..."):
         if derivative_order:
             template = """Convert {eq} into a form that Wolfram Alpha can understand, try finding its {order} derivative, and describe the answer concisely.

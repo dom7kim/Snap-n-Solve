@@ -97,7 +97,7 @@ def solve_equation(equation, agent, derivative_order):
     st.latex(r'\mathrm{Solving:}\;' + equation)
     with st.spinner("Wait for it..."):
         if derivative_order:
-            template = """Make {eq} wolfram-friendly, try finding its {order} derivative, and describe the answer in one sentence."""
+            template = """Make {eq} wolfram-friendly, try finding its {order} derivative, and describe the answer concisely."""
             prompt = PromptTemplate(
             input_variables=['eq', 'order'],
             template = template

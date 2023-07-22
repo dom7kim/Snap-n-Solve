@@ -81,8 +81,8 @@ def process_response(response):
         st.error("An error occurred while processing the image. Please try again.")
     elif response.json()['is_printed'] | response.json()['is_handwritten']:
         response_text = response.json()['text']
-        response_latex = response_text.replace("\\(", "").replace("\\)", "")
         if check_response_text(response_text):
+            response_latex = response_text.replace("\\(", "").replace("\\)", "")
             st.latex('\\text{{Solving: }}' + response_latex)
             return response_latex
         else:
@@ -96,8 +96,8 @@ def process_response(response):
 def latexify_answer(input_text):
     system_instruction = """Just follow the instruction. No mistake.
     Put plain texts into the \\text{{}} command and then convert mathematical equations into a LaTex format. 
-    If your input is 'The solution to the equation ax^2 + bx + c = 0  is given by x = (-b ± sqrt(b^2 - 4ac))/(2a)',
-    your output should be '\\text{{The solution to the equation }} a x^{{2}} + b x + c = 0 \\text{{ is given by }} x = \\frac{{-b \\pm \\sqrt{{b^{{2}} - 4ac}}}}{{2a}}'.
+    If your input is "The solution to the equation ax^2 + bx + c = 0  is given by x = (-b ± sqrt(b^2 - 4ac))/(2a)",
+    your output should be "\\text{{The solution to the equation }} a x^{{2}} + b x + c = 0 \\text{{ is given by }} x = \\frac{{-b \\pm \\sqrt{{b^{{2}} - 4ac}}}}{{2a}}".
     """
     messages = [{"role": "system", "content": system_instruction},
                     {"role": "user", "content": input_text}]
@@ -105,7 +105,7 @@ def latexify_answer(input_text):
                                             temperature = 0,
                                             messages=messages) 
     result = response['choices'][0]['message']['content']
-
+    
     return result
 
 # Function to solve an equation or find its derivative using Wolfram Alpha

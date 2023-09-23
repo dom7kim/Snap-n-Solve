@@ -2,6 +2,8 @@
 
 Snap 'n' Solve is a Streamlit app that allows you to solve various math problems from an image. It handles a variety of math problems, including integrals, limits, derivatives, equations, and inequalities.
 
+[![View the demo on YouTube.](youtube.png)](https://www.youtube.com/watch?v=_rBe8L9qlDo)
+
 ## Features
 
 - Upload an image with a mathematical equation or expression.
